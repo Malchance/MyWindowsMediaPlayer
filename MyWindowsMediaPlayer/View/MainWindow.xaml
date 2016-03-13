@@ -1,0 +1,176 @@
+﻿<Window x:Class="MyWindowsMediaPlayer.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MyWindowsMediaPlayer.View"
+        xmlns:Model="clr-namespace:MyWindowsMediaPlayer.Model"
+        mc:Ignorable="d"
+        Title="MyMediaPlayer" Height="550" Width="825">
+    <DockPanel Background="White">
+        <Menu DockPanel.Dock="Left" Background="DodgerBlue" Width="35" Height="auto">
+            <MenuItem ToolTip="Musiques">
+                <MenuItem.Header>
+                    <Image Name="btnAudio" Width="20" Height="20" Margin="0, 5, 0, 5" Source="/MyWindowsMediaPlayer;component/Resources/UI_music.png" />
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem ToolTip="Vidéos">
+                <MenuItem.Header>
+                    <Image Name="btnVideo" Width="20" Height="20" Margin="0, 5, 0, 5" Source="/MyWindowsMediaPlayer;component/Resources/UI_video.png" />
+                </MenuItem.Header>
+            </MenuItem>
+        </Menu>
+        <MediaElement x:Name="me" Visibility="Collapsed"
+                      Volume="{Binding ElementName=volume_Slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                      MediaOpened="MediaElement_MediaOpened"
+                      MediaEnded="MediaElement_MediaEnded" />
+
+        <Label x:Name="playlistTitle"
+                MouseDoubleClick="RenameLib_MouseDoubleClick"
+                MouseEnter="playlistTitle_MouseEnter"
+                MouseLeave="playlistTitle_MouseLeave"
+                Content="{Binding Path=CurrentLib.Value.Name}"
+                ToolTip="Double clic pour renommer"
+                Width="auto" Height="50"
+                DockPanel.Dock="Top"
+                VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                />
+        <StackPanel DockPanel.Dock="Bottom" Height="100"
+                    Background="DodgerBlue">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Label x:Name="currentPlay" Content=""
+                       Foreground="White"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label x:Name="l_currentTime" Width="60"
+                       VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Center"
+                       Foreground="White"
+                       Content="00:00:00" />
+                <Slider x:Name="slider"
+                        IsSelectionRangeEnabled="True"
+                        SelectionStart="0" SelectionEnd="{Binding ElementName=slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                        ValueChanged="slider_ValueChanged"
+                        Thumb.DragStarted="slider_DragStarted" Thumb.DragCompleted="slider_DragCompleted"
+                        Margin="5"
+                        Height="30" Width="250">
+                    <Slider.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="DarkSlateBlue" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkDarkBrushKey}" Color="Silver" />
+                    </Slider.Resources>
+                </Slider>
+                <Label x:Name="l_remaningTime" Width="60"
+                       VerticalContentAlignment="Center"
+                       HorizontalContentAlignment="Center"
+                       Foreground="White"
+                       Content="00:00:00" />
+                <Button x:Name="UI_btnPlay"
+                        Content="Play"
+                        Click="MediaPlay_Click"
+                        Margin="5"
+                        Style="{DynamicResource RoundedButtonStyle}" />
+                <Button x:Name="UI_btnStop" Content="Stop"
+                        Click="MediaStop_Click"
+                        Margin="5"
+                        Style="{DynamicResource RoundedButtonStyle}" />
+                <StackPanel Orientation="Horizontal">
+                    <Model:FormattedSlider x:Name="volume_Slider"
+                            Background="DodgerBlue"
+                            Value="0.5"
+                            IsSelectionRangeEnabled="True"
+                            SelectionStart="0" SelectionEnd="{Binding ElementName=volume_Slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                            Width="100"
+                            Margin="0, 10"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="0.01"
+                            SmallChange="0.01" LargeChange="0.1"
+                            Focusable="False"
+                            AutoToolTipPlacement="TopLeft"
+                            AutoToolTipPrecision="2"
+                            AutoTooltipFormat="{}{0}"
+                            Minimum="0" Maximum="1">
+                        <Slider.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="DarkSlateBlue" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkDarkBrushKey}" Color="Silver" />
+                        </Slider.Resources>
+                    </Model:FormattedSlider>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel x:Name="sp_playlistTools" DockPanel.Dock="Left" Orientation="Vertical">
+            <Label Content="Playlist" />
+            <Button x:Name="linkedListPrev"
+                    Click="LibPrev_Click"
+                    ToolTip="Playlist précédente"
+                    VerticalAlignment="Top"
+                    Margin="2"
+                    Width="30" Height="25"
+                    Style="{DynamicResource RoundedButtonStyle}">
+                <Image Source="/MyWindowsMediaPlayer;component/Resources/UI_prev.png"/>
+            </Button>
+            <Button x:Name="linkedListNext"
+                    Click="LibNext_Click"
+                    ToolTip="Playlist suivante"
+                    VerticalAlignment="Top"
+                    Margin="2"
+                    Width="30" Height="25"
+                    Style="{DynamicResource RoundedButtonStyle}">
+                <Image Source="/MyWindowsMediaPlayer;component/Resources/UI_next.png"/>
+            </Button>
+            <Button x:Name="addLib"
+                    Click="AddLib_Click"
+                    ToolTip="Créer une playlist"
+                    VerticalAlignment="Top"
+                    Margin="2"
+                    Width="30" Height="25"
+                    Style="{DynamicResource RoundedButtonStyle}">
+                <Image Source="/MyWindowsMediaPlayer;component/Resources/UI_plus.ico"/>
+            </Button>
+            <Label Content="Actions" />
+            <Button x:Name="repPrev"
+                    Click="RepPrev_Click"
+                    ToolTip="Dossier précédent"
+                    VerticalAlignment="Top"
+                    Margin="2"
+                    Width="30" Height="25"
+                    Style="{DynamicResource RoundedButtonStyle}">
+                <Image Source="/MyWindowsMediaPlayer;component/Resources/UI_prev.png"/>
+            </Button>
+            <Button x:Name="addFile"
+                    Click="AddFile_Click"
+                    ToolTip="Ajouter un fichier"
+                    Margin="2"
+                    Width="30" Height="25"
+                    Style="{DynamicResource RoundedButtonStyle}">
+                <Image Source="/MyWindowsMediaPlayer;component/Resources/UI_file.png" />
+            </Button>
+        </StackPanel>
+        <ListView x:Name="lb_playlist"
+                  MouseDoubleClick="ListBoxActions_MouseDoubleClick"
+                  Visibility="Visible"
+                  ItemsSource="{Binding Path=CurrentLib.Value.playlist}"
+                  DisplayMemberPath="Name">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Nom"
+                                    Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock x:Name="textBlock_Name" Text="{Binding Name}" Foreground="{Binding TextColor}"
+                                           Background="{Binding BackgroundColor}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Modifié le" DisplayMemberBinding="{Binding Path=LastWriteTime}"
+                                    Width="auto" />
+                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Path=Type}"
+                                    Width="auto" />
+                    <GridViewColumn Header="Taille" DisplayMemberBinding="{Binding Path=Size}"
+                                    Width="75" />
+                    <GridViewColumn Header="Durée" DisplayMemberBinding="{Binding Path=Duration}"
+                                    Width="75" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DockPanel>
+</Window>
