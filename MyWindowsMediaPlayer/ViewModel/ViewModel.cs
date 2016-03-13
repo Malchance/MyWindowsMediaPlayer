@@ -16,6 +16,7 @@ namespace MyWindowsMediaPlayer.ViewModel
             try
             {
                 MainWindow._ofd = new Ofd();
+                var toto = new string("toto");
                 _sh = new Shell();
                 me.Loaded += MediaElement_Loaded;
                 #region setup Library
